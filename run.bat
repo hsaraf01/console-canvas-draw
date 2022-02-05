@@ -1,0 +1,1 @@
+java -jar output/console-canvas-draw-1.0-SNAPSHOT.jar
