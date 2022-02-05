@@ -7,7 +7,7 @@ import static com.canvasdraw.utils.Constants.*;
 
 public class CanvasDrawService {
 
-    private static final String COMMAND_ERROR_MSG = USER_INPUT_ERROR_MSG+" '%s' is not a valid command. %s";
+    private static final String COMMAND_ERROR_MSG = USER_INPUT_ERROR_MSG +" '%s' is not a valid command. %s";
     private final Canvas canvas;
     private final CanvasCommandValidator canvasCommandValidator;
 

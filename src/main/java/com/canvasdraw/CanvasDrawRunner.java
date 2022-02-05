@@ -26,15 +26,11 @@ public class CanvasDrawRunner {
             try {
                 canvasDrawService.processCommand(command);
             } catch (CanvasException e) {
-                logError(e.getMessage());
+                System.out.println(e.getMessage());
             } catch (Exception e) {
                 System.out.println("System error: " + e.getMessage());
             }
         }
-    }
-
-    private static void logError(final String errorMessage) {
-        System.out.println(USER_INPUT_ERROR_MSG + errorMessage);
     }
 
 }
