@@ -5,18 +5,21 @@ Simple app to draw lines and rectangles and paint in console.
 * You need Java 8 or higher as well as maven installed to build the app
 * To run the app, you only need Java JRE
 
-### Executing program
-* Open a terminal and go the project directory
+### Building App
+Open a terminal and go the project directory
 
 * Build the program
 
         mvn clean package
 
-* To execute on Windows command prompt, run below script
+### Executing App
+Open a terminal and go the project directory
+
+* To run App on Windows command prompt, execute below script
 
         .\run.bat
 
-* To execute on Linux bash, run below command
+* To run App on Linux bash, execute below command
 
         ./run.sh
 
