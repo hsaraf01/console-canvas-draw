@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -46,180 +47,160 @@ public class CanvasDrawServiceTest {
         assertThat(canvasBoard[0].length, is(width + 2));
         assertThat(canvas.getHeight(), is(height));
         assertThat(canvas.getWidth(), is(width));
-        for (int h = 1; h < canvasBoard.length - 1; h++) {
-            assertThat(canvasBoard[h][0], is(VERTICAL_BORDER));
-            assertThat(canvasBoard[h][width + 1], is(VERTICAL_BORDER));
+        for (int y = 1; y < canvasBoard.length - 1; y++) {
+            assertThat(canvasBoard[y][0], is(VERTICAL_BORDER));
+            assertThat(canvasBoard[y][width + 1], is(VERTICAL_BORDER));
         }
-        for (int w = 0; w < canvasBoard[0].length; w++) {
-            assertThat(canvasBoard[0][w], is(HORIZONTAL_BORDER));
-            assertThat(canvasBoard[height + 1][w], is(HORIZONTAL_BORDER));
+        for (int x = 0; x < canvasBoard[0].length; x++) {
+            assertThat(canvasBoard[0][x], is(HORIZONTAL_BORDER));
+            assertThat(canvasBoard[height + 1][x], is(HORIZONTAL_BORDER));
         }
 
-        for (int h = 1; h < canvasBoard.length - 1; h++) {
-            for (int w = 1; w < canvasBoard[0].length - 1; w++) {
-                assertThat(canvasBoard[h][w], is(EMPTY));
+        for (int y = 1; y < canvasBoard.length - 1; y++) {
+            for (int x = 1; x < canvasBoard[0].length - 1; x++) {
+                assertThat(canvasBoard[y][x], is(EMPTY));
             }
         }
     }
 
     @Test
     public void testVerticalLineCreated() {
-        final String canvasCommand = "C 20 7";
         final String[] lineCommands = {"L 1 4 6 4", "L 6 4 1 4"};
-        Arrays.stream(lineCommands).forEach(lineCommand -> {
-            reset(canvasCommandValidator);
-            reset(canvas);
-            String[] values = lineCommand.split(" ");
-            int x1 = Integer.parseInt(values[1]), x2 = Integer.parseInt(values[3]), y = Integer.parseInt(values[2]);
-            List<Integer> horizontalPts = getRange(x1, x2);
-            try {
-                canvasDrawService.processCommand(canvasCommand);
-                canvasDrawService.processCommand(lineCommand);
-                verify(canvasCommandValidator, times(1)).validate(lineCommand);
-                verify(canvas, times(2)).printCanvas();
-                char[][] canvasBoard = canvas.getCanvasBoard();
-                for (int h = 1; h < canvasBoard.length - 1; h++) {
-                    for (int w = 1; w < canvasBoard[0].length - 1; w++) {
-                        if (h == y && horizontalPts.contains(w)) {
-                            assertThat(canvasBoard[h][w], is(DRAWING_CHAR));
-                        } else {
-                            assertThat(canvasBoard[h][w], is(EMPTY));
-                        }
-
-                    }
-                }
-            } catch (CanvasException e) {
-                fail();
-            }
-        });
+        Arrays.stream(lineCommands).forEach(lineCommand -> processAndVerifyCommand(getCanvasCommand(), lineCommand, Axis.XAXIS));
     }
 
     @Test
     public void testHorizontalLineCreated() {
-        final String canvasCommand = "C 20 7";
         final String[] lineCommands = {"L 5 3 5 7", "L 5 7 5 3"};
-        Arrays.stream(lineCommands).forEach(lineCommand -> {
-            reset(canvasCommandValidator);
-            reset(canvas);
-            String[] values = lineCommand.split(" ");
-            int x = Integer.parseInt(values[1]), y1 = Integer.parseInt(values[2]), y2 = Integer.parseInt(values[4]);
-            List<Integer> verticalPts = getRange(y1, y2);
-            try {
-                canvasDrawService.processCommand(canvasCommand);
-                canvasDrawService.processCommand(lineCommand);
-                verify(canvasCommandValidator, times(1)).validate(lineCommand);
-                verify(canvas, times(2)).printCanvas();
-                char[][] canvasBoard = canvas.getCanvasBoard();
-                for (int h = 1; h < canvasBoard.length - 1; h++) {
-                    for (int w = 1; w < canvasBoard[0].length - 1; w++) {
-                        if (w == x && verticalPts.contains(h)) {
-                            assertThat(canvasBoard[h][w], is(DRAWING_CHAR));
-                        } else {
-                            assertThat(canvasBoard[h][w], is(EMPTY));
-                        }
-                    }
-                }
-            } catch (CanvasException e) {
-                fail();
-            }
-        });
+        Arrays.stream(lineCommands).forEach(lineCommand -> processAndVerifyCommand(getCanvasCommand(), lineCommand, Axis.YAXIS));
     }
 
     @Test
     public void testRectangleCreated() {
-        final String canvasCommand = "C 20 7";
         final String[] rectangleCommands = {"R 14 1 18 4", "R 18 4 14 1", "R 10 7 15 3", "R 19 1 17 3", "R 4 2 8 2"};
-        Arrays.stream(rectangleCommands).forEach(rectangleCommand -> {
-            reset(canvasCommandValidator);
-            reset(canvas);
-            String[] values = rectangleCommand.split(" ");
-            int x1 = Integer.parseInt(values[1]), x2 = Integer.parseInt(values[3]), y1 = Integer.parseInt(values[2]), y2 = Integer.parseInt(values[4]);
-            List<Integer> horizontalPts = getRange(x1, x2);
-            List<Integer> verticalPts = getRange(y1, y2);
-            try {
-                canvasDrawService.processCommand(canvasCommand);
-                canvasDrawService.processCommand(rectangleCommand);
-                verify(canvasCommandValidator, times(1)).validate(rectangleCommand);
-                verify(canvas, times(2)).printCanvas();
-
-                char[][] canvasBoard = canvas.getCanvasBoard();
-                for (int h = 1; h < canvasBoard.length - 1; h++) {
-                    for (int w = 1; w < canvasBoard[0].length - 1; w++) {
-                        if ((verticalPts.contains(h) && (w == x1 || w == x2)) || (horizontalPts.contains(w) && (h == y1 || h == y2))) {
-                            assertThat(canvasBoard[h][w], is(DRAWING_CHAR));
-                        } else {
-                            assertThat(canvasBoard[h][w], is(EMPTY));
-                        }
-
-                    }
-                }
-            } catch (CanvasException e) {
-                fail();
-            }
-
-        });
-
+        Arrays.stream(rectangleCommands).forEach(rectangleCommand -> processAndVerifyCommand(getCanvasCommand(), rectangleCommand, null));
     }
 
     @Test
     public void testCanvasPaint() throws CanvasException {
-        int x1 = 4, x2 = 9, y1 = 1, y2 = 4, p1 = 10, p2 = 3;
-        char c = '*';
-        final String canvasCommand = "C 20 7";
-        final String rectangleCommand = "R " + x1 + " " + y1 + " " + x2 + " " + y2;
-        final String paintCommand = "B " + p1 + " " + p2 + " " + c;
-        List<Integer> horizontalPts = getRange(x1, x2);
-        List<Integer> verticalPts = getRange(y1, y2);
-        canvasDrawService.processCommand(canvasCommand);
-        canvasDrawService.processCommand(rectangleCommand);
-        canvasDrawService.processCommand(paintCommand);
-        verify(canvasCommandValidator, times(1)).validate(paintCommand);
-        verify(canvas, times(3)).printCanvas();
-
-        char[][] canvasBoard = canvas.getCanvasBoard();
-        for (int h = 1; h < canvasBoard.length - 1; h++) {
-            for (int w = 1; w < canvasBoard[0].length - 1; w++) {
-                if (verticalPts.contains(h) && (horizontalPts.contains(w))) {
-                    assertThat(canvasBoard[h][w], anyOf(is(DRAWING_CHAR), is(EMPTY)));
-                } else {
-                    assertThat(canvasBoard[h][w], is(c));
-                }
-
-            }
-        }
+        int[] rectanglePts = {4, 1, 9, 4};
+        int[] paintPts = {10, 3};
+        processAndVerifyPaintCommand(getCanvasCommand(), rectanglePts, paintPts, false);
     }
 
     @Test
     public void testCanvasPaintInRectangleOnly() throws CanvasException {
-        int x1 = 14, x2 = 19, y1 = 1, y2 = 5, p1 = 16, p2 = 2;
-        char c = '*';
-        final String canvasCommand = "C 20 7";
-        final String rectangleCommand = "R " + x1 + " " + y1 + " " + x2 + " " + y2;
-        final String paintCommand = "B " + p1 + " " + p2 + " " + c;
-        List<Integer> paintHorizontalPts = getRange(x1 + 1, x2 - 1);
-        List<Integer> paintVerticalPts = getRange(y1 + 1, y2 - 1);
-        canvasDrawService.processCommand(canvasCommand);
-        canvasDrawService.processCommand(rectangleCommand);
-        canvasDrawService.processCommand(paintCommand);
-        verify(canvasCommandValidator, times(1)).validate(paintCommand);
-        verify(canvas, times(3)).printCanvas();
+        int[] rectanglePts = {14, 1, 19, 5};
+        int[] paintPts = {16, 2};
+        processAndVerifyPaintCommand(getCanvasCommand(), rectanglePts, paintPts, true);
+    }
 
-        char[][] canvasBoard = canvas.getCanvasBoard();
-        for (int h = 1; h < canvasBoard.length - 1; h++) {
-            for (int w = 1; w < canvasBoard[0].length - 1; w++) {
-                if (paintVerticalPts.contains(h) && (paintHorizontalPts.contains(w))) {
-                    assertThat(canvasBoard[h][w], is(c));
-                } else {
-                    assertThat(canvasBoard[h][w], anyOf(is(DRAWING_CHAR), is(EMPTY)));
-                }
+    private boolean verifyCoordinate(int x1, int x2, int y1, int y2, List<Integer> horizontalPts, List<Integer> verticalPts, int y, int x, String commandStartWith, Axis axis) {
+        boolean result = false;
+        switch (commandStartWith) {
+            case RECTANGLE_COMMAND_STARTS_WITH:
+                result = (verticalPts.contains(y) && (x == x1 || x == x2)) || (horizontalPts.contains(x) && (y == y1 || y == y2));
+                break;
+            case LINE_COMMAND_STARTS_WITH:
+                result = verifyXOrYAxisForLineCommand(x, y, verticalPts, axis) && verifyPtsXOrYAxisForLineCommand(x, y, horizontalPts, axis);
+                break;
 
-            }
         }
+        return result;
+    }
+
+    private List<Integer> getHorizontalAxisPoints(String commandStartWith, int x1, int x2, int y1, int y2, Axis axis) {
+        switch (commandStartWith) {
+            case RECTANGLE_COMMAND_STARTS_WITH:
+                return getRange(x1, x2);
+            case LINE_COMMAND_STARTS_WITH:
+                return axis == Axis.XAXIS ? getRange(x1, x2) : getRange(y1, y2);
+        }
+        return Collections.emptyList();
+    }
+
+    private List<Integer> getVerticalAxisPoints(String commandStartWith, int x1, int y1, int y2, Axis axis) {
+        switch (commandStartWith) {
+            case RECTANGLE_COMMAND_STARTS_WITH:
+                return getRange(y1, y2);
+            case LINE_COMMAND_STARTS_WITH:
+                return axis == Axis.XAXIS ? getRange(y1, y1) : getRange(x1, x1);
+        }
+        return Collections.emptyList();
+    }
+
+    private boolean verifyPtsXOrYAxisForLineCommand(int xAxis, int yAxis, List<Integer> axisPts, Axis axis) {
+        return axis == Axis.XAXIS ? axisPts.contains(xAxis) : axisPts.contains(yAxis);
+    }
+
+    private boolean verifyXOrYAxisForLineCommand(int xAxis, int yAxis, List<Integer> axisPts, Axis axis) {
+        return axis == Axis.XAXIS ? axisPts.contains(yAxis) : axisPts.contains(xAxis);
     }
 
     private List<Integer> getRange(int start, int end) {
         return start < end ? IntStream.rangeClosed(start, end).boxed().collect(Collectors.toList()) :
                 IntStream.rangeClosed(end, start).boxed().collect(Collectors.toList());
+    }
 
+    private String getCanvasCommand() {
+        return "C 20 7";
+    }
+
+    private void processAndVerifyCommand(String canvasCommand, String command, Axis axis) {
+        try {
+            reset(canvasCommandValidator);
+            reset(canvas);
+            String[] values = command.split(" ");
+            int x1 = Integer.parseInt(values[1]), y1 = Integer.parseInt(values[2]), x2 = Integer.parseInt(values[3]), y2 = Integer.parseInt(values[4]);
+            List<Integer> horizontalAxisPoints = getHorizontalAxisPoints(values[0], x1, x2, y1, y2, axis);
+            List<Integer> verticalAxisPoints = getVerticalAxisPoints(values[0], x1, y1, y2, axis);
+            canvasDrawService.processCommand(canvasCommand);
+            canvasDrawService.processCommand(command);
+            verify(canvasCommandValidator, times(1)).validate(command);
+            verify(canvas, times(2)).printCanvas();
+            char[][] canvasBoard = canvas.getCanvasBoard();
+            for (int y = 1; y < canvasBoard.length - 1; y++) {
+                for (int x = 1; x < canvasBoard[0].length - 1; x++) {
+                    if (verifyCoordinate(x1, x2, y1, y2, horizontalAxisPoints, verticalAxisPoints, y, x, values[0], axis)) {
+                        assertThat(canvasBoard[y][x], is(DRAWING_CHAR));
+                    } else {
+                        assertThat(canvasBoard[y][x], is(EMPTY));
+                    }
+                }
+            }
+        } catch (CanvasException e) {
+            fail();
+        }
+    }
+
+    private void processAndVerifyPaintCommand(String canvasCommand, int[] rectanglePts, int[] paintPts, boolean paintOnlyInRectangle) throws CanvasException {
+        char c = '*';
+        int x1 = rectanglePts[0], x2 = rectanglePts[2], y1 = rectanglePts[1], y2 = rectanglePts[3];
+        final String rectangleCommand = "R " + x1 + " " + y1 + " " + x2 + " " + y2;
+        final String paintCommand = "B " + paintPts[0] + " " + paintPts[1] + " " + c;
+        List<Integer> horizontalPts = getRange(paintOnlyInRectangle ? x1 + 1 : x1, paintOnlyInRectangle ? x2 - 1 : x2);
+        List<Integer> verticalPts = getRange(paintOnlyInRectangle ? y1 + 1 : y1, paintOnlyInRectangle ? y2 - 1 : y2);
+        canvasDrawService.processCommand(canvasCommand);
+        canvasDrawService.processCommand(rectangleCommand);
+        canvasDrawService.processCommand(paintCommand);
+        verify(canvasCommandValidator, times(1)).validate(paintCommand);
+        verify(canvas, times(3)).printCanvas();
+        char[][] canvasBoard = canvas.getCanvasBoard();
+        for (int h = 1; h < canvasBoard.length - 1; h++) {
+            for (int w = 1; w < canvasBoard[0].length - 1; w++) {
+                boolean contains = verticalPts.contains(h) && (horizontalPts.contains(w));
+                if (paintOnlyInRectangle != contains) {
+                    assertThat(canvasBoard[h][w], anyOf(is(DRAWING_CHAR), is(EMPTY)));
+                } else {
+                    assertThat(canvasBoard[h][w], is(c));
+                }
+
+            }
+        }
+    }
+
+    private enum Axis {
+        XAXIS,
+        YAXIS
     }
 }
