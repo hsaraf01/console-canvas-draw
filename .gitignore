@@ -2,4 +2,5 @@
 .idea
 *.iml
 
+output/canvas_error.log
 target

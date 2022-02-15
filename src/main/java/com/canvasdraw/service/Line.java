@@ -4,7 +4,7 @@ import com.canvasdraw.exception.CanvasException;
 
 import static com.canvasdraw.utils.Constants.*;
 
-public class Line implements Shape {
+public class Line {
 
     private int xAxisStartPoint;
     private int yAxisStartPoint;
@@ -20,7 +20,6 @@ public class Line implements Shape {
         this.yAxisEndPoint = Integer.parseInt(commandValues[4]);
     }
 
-    @Override
     public void draw() throws CanvasException {
         if (canvas != null && canvas.getCanvasBoard() != null) {
             if (isLineInputPointsValid(canvas.getWidth(), canvas.getHeight())) {

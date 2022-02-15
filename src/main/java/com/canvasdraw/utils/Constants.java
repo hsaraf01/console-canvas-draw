@@ -14,6 +14,7 @@ public final class Constants {
     public static final char EMPTY = ' ';
 
     public static final String USER_INPUT_ERROR_MSG = "User input error:";
+    public static final String SYSTEM_ERROR_MSG = "System error: ";
     public static final String CANVAS_NOT_AVAILABLE_ERROR_MSG = "Canvas is not created.";
     public static final String INVALID_RECTANGLE_INPUTS_ERROR_MSG = "Rectangle drawing inputs outside canvas boundaries or invalid.";
     public static final String INVALID_LINE_INPUTS_ERROR_MSG = "Line drawing inputs outside canvas boundaries or invalid.";

@@ -1,1 +1,1 @@
-java -jar output/console-canvas-draw-1.0-SNAPSHOT.jar
+java -jar output/console-canvas-draw-1.0-SNAPSHOT-jar-with-dependencies.jar

@@ -13,7 +13,7 @@ public class Canvas {
     private int heightWithBorder;
     private char[][] canvasBoard;
 
-    public void initialize(final String[] commandValues) {
+    public void draw(final String[] commandValues) throws CanvasException {
         this.width = Integer.parseInt(commandValues[1]);
         this.height = Integer.parseInt(commandValues[2]);
         this.widthWithBorder = width + 2;
@@ -29,21 +29,6 @@ public class Canvas {
             }
             System.out.println();
         }
-    }
-
-    public void drawLine(final String[] commandValues) throws CanvasException {
-        Shape line = new Line(this, commandValues);
-        line.draw();
-    }
-
-    public void drawRectangle(final String[] commandValues) throws CanvasException {
-        Shape rectangle = new Rectangle(this, commandValues);
-        rectangle.draw();
-    }
-
-    public void paint(final String[] commandValues) throws CanvasException {
-        Paint paint = new Paint(this, commandValues);
-        paint.fill();
     }
 
     public char[][] getCanvasBoard() {

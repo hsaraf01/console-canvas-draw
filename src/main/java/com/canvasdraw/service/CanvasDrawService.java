@@ -1,5 +1,7 @@
 package com.canvasdraw.service;
 
+import com.canvasdraw.command.Command;
+import com.canvasdraw.command.CommandFactory;
 import com.canvasdraw.exception.CanvasException;
 import com.canvasdraw.validator.CanvasCommandValidator;
 
@@ -9,43 +11,26 @@ public class CanvasDrawService {
 
     private static final String COMMAND_ERROR_MSG = USER_INPUT_ERROR_MSG +" '%s' is not a valid command. %s";
     private final Canvas canvas;
+    private final CommandFactory commandFactory;
     private final CanvasCommandValidator canvasCommandValidator;
 
     public CanvasDrawService(Canvas canvas, CanvasCommandValidator canvasCommandValidator) {
         this.canvas = canvas;
+        this.commandFactory = new CommandFactory();
         this.canvasCommandValidator = canvasCommandValidator;
     }
 
-    public void processCommand(String command) throws CanvasException {
-
-        if (canvasCommandValidator.validate(command)) {
-            String[] commandValues = command.split(" ");
-            switch (commandValues[0]) {
-                case CANVAS_COMMAND_STARTS_WITH:
-                    canvas.initialize(commandValues);
-                    break;
-                case LINE_COMMAND_STARTS_WITH:
-                    canvas.drawLine(commandValues);
-                    break;
-                case RECTANGLE_COMMAND_STARTS_WITH:
-                    canvas.drawRectangle(commandValues);
-                    break;
-                case BUCKET_COMMAND_STARTS_WITH:
-                    canvas.paint(commandValues);
-                    break;
-                case QUIT_COMMAND:
-                    System.out.print("Quiting the program... ");
-                    System.exit(0);
-                default:
-                    throw new CanvasException("Looks like " + command + " is not implemented yet.");
-            }
+    public void processCommand(String canvasCommand) throws CanvasException {
+        if (canvasCommandValidator.validate(canvasCommand)) {
+            String[] commandValues = canvasCommand.split(" ");
+            Command command = commandFactory.create(canvas, commandValues);
+            command.execute();
             canvas.printCanvas();
         } else {
-            throw new CanvasException(String.format(COMMAND_ERROR_MSG, command, commandHelpMessage()));
+            throw new CanvasException(String.format(COMMAND_ERROR_MSG, canvasCommand, commandHelpMessage()));
         }
 
     }
-
     private String commandHelpMessage() {
         StringBuilder builder = new StringBuilder();
         builder.append("Following is the list of valid commands\n\n");

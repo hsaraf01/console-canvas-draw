@@ -4,7 +4,7 @@ import com.canvasdraw.exception.CanvasException;
 
 import static com.canvasdraw.utils.Constants.*;
 
-public class Rectangle implements Shape {
+public class Rectangle {
 
     private final int xAxisStartPoint;
     private final int yAxisStartPoint;
@@ -20,7 +20,6 @@ public class Rectangle implements Shape {
         this.yAxisEndPoint = Integer.parseInt(commandValues[4]);
     }
 
-    @Override
     public void draw() throws CanvasException {
         if (canvas != null && canvas.getCanvasBoard() != null) {
             char[][] canvasBoard = this.canvas.getCanvasBoard();
